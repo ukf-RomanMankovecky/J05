@@ -6,28 +6,42 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
 <GridPane fx:controller="CoronaStat.Controller"
-          xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
+          xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="120" vgap="120">
+
 
     <padding>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+        <Insets bottom="25.0" left="24.0" right="27.0" top="24.0"/>
     </padding>
 
     <TableView fx:id="tableView" GridPane.columnIndex="0" GridPane.rowIndex="0">
         <columns>
-            <TableColumn fx:id="dateColumn" prefWidth="200" text="Date">
+            <TableColumn fx:id="dateColumn" prefWidth="200" text="Dátum" sortable="true">
                 <cellValueFactory> <PropertyValueFactory property="date"/> </cellValueFactory>
             </TableColumn>
-            <TableColumn fx:id="confirmedColumn" prefWidth="200" text="Confirmed cases">
+            <TableColumn fx:id="confirmedColumn" prefWidth="200" text="Potvrdených prípadov" sortable="true">
                 <cellValueFactory> <PropertyValueFactory property="confirmed"/> </cellValueFactory>
             </TableColumn>
-            <TableColumn fx:id="deathsColumn" prefWidth="200" text="Deaths">
+            <TableColumn fx:id="deathsColumn" prefWidth="200" text="Počet smrtí" sortable="true">
                 <cellValueFactory> <PropertyValueFactory property="deaths"/> </cellValueFactory>
             </TableColumn>
-            <TableColumn fx:id="recoveredColumn" prefWidth="200" text="Recovered">
+            <TableColumn fx:id="recoveredColumn" prefWidth="200" text="Počet uzdravených" sortable="true">
                 <cellValueFactory> <PropertyValueFactory property="recovered"/> </cellValueFactory>
             </TableColumn>
         </columns>
     </TableView>
 
+    <VBox spacing = "20" alignment="BOTTOM_CENTER" GridPane.columnIndex="0" GridPane.rowIndex="2">
+        <HBox spacing = "20" alignment="BOTTOM_CENTER" GridPane.columnIndex="0" GridPane.rowIndex="2">
+            <TextField fx:id="countryField" promptText="Krajina" prefWidth="150"/>
+            <TextField fx:id="dateField" promptText="rok-mesiac-deň" prefWidth="150"/>
+            <Button text="Nájsť Dátum" onAction="#find" />
+        </HBox>
+        <Label>Krajiny idú vyhľadávať len v slovenčine napr. Slovensko</Label>
+        <Label>Dátum -> Formát: rok-mesiac-deň</Label>
+    </VBox>
 </GridPane>

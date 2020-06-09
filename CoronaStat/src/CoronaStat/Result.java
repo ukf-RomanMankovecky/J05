@@ -9,11 +9,11 @@ public class Result {
 
     public Result() { this("","","",""); };
 
-    public Result(String date, String confirmed, String deaths, String recovered) {
-        setDate(date);
-        setConfirmed(confirmed);
-        setDeaths(deaths);
-        setRecovered(recovered);
+    public Result(String datum, String potvrdenych, String smrti, String uzdravenych) {
+        setDate(potvrdenych);
+        setConfirmed(smrti);
+        setDeaths(smrti);
+        setRecovered(uzdravenych);
 
     }
 
