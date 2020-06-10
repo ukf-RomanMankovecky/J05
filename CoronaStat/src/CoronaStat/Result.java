@@ -10,8 +10,8 @@ public class Result {
     public Result() { this("","","",""); };
 
     public Result(String datum, String potvrdenych, String smrti, String uzdravenych) {
-        setDate(potvrdenych);
-        setConfirmed(smrti);
+        setDate(datum);
+        setConfirmed(potvrdenych);
         setDeaths(smrti);
         setRecovered(uzdravenych);
 

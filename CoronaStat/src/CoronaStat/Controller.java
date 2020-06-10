@@ -2,6 +2,7 @@ package CoronaStat;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import org.json.JSONArray;
@@ -21,31 +22,44 @@ public class Controller {
     @FXML private TextField countryField;
     @FXML private TextField dateField;
 
-    @FXML protected void initialize() {
-        nadstavKrajiny();
-        stiahniData("", "");
-    }
-
     static HashMap<String, Result> resultHashMap;
     private HashMap<String, String> countries;
-    static boolean GB;
+    static boolean glob;
+
+    @FXML protected void initialize() {
+        defaultCountries();
+        //GetData("", "");
+    }
+
+    void defaultCountries(){
+        countries = new HashMap<>();
+        for (String ISO2 : Locale.getISOCountries(Locale.IsoCountryCode.PART1_ALPHA2)) {
+            Locale l = new Locale("", ISO2);
+            String ISO3 = l.getISO3Country();
+            countries.put(l.getDisplayCountry(), ISO3);
+        }
+    }
+
+    @FXML void findWDate(ActionEvent event){
+        tableView.getItems().clear();
+        if(CheckDate( dateField.getText())) {
+            GetData(countryField.getText(),dateField.getText());
+        }
+    }
+
+    @FXML void findCountry(ActionEvent event){
+        tableView.getItems().clear();
+        GetData(countryField.getText(), "");
+    }
 
     void addResult(Result result) {
         ObservableList<Result> data = tableView.getItems();
         data.add(result);
     }
 
-    @FXML void find(ActionEvent event){
-        tableView.getItems().clear();
-        stiahniData(countryField.getText(), dateField.getText());
-    }
-
-    void stiahniData(String ISO, String datum) {
-        ISO = transformIso(ISO);
-        if(!CheckD(datum)) {
-            datum="";
-        }
+    void GetData(String ISO, String datum) {
         resultHashMap = new HashMap<>();
+        ISO = transformIso(ISO);
         HttpClient client = HttpClient.newHttpClient();
         String uri = "https://covidapi.info/api/v1/";
         if(ISO.equals("")) {
@@ -56,7 +70,7 @@ public class Controller {
         if(!datum.equals("")) {
             uri += "/"+datum;
         }
-        GB = ISO.equals("");
+        glob = ISO.equals("");
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(uri)).build();
 
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
@@ -64,15 +78,8 @@ public class Controller {
                 .thenApply(Controller::jsonParse)
                 .join();
 
-        for (String date : resultHashMap.keySet()) addResult(resultHashMap.get(date));
-    }
-
-    void nadstavKrajiny(){
-        countries = new HashMap<>();
-        for (String ISO2 : Locale.getISOCountries(Locale.IsoCountryCode.PART1_ALPHA2)) {
-            Locale l = new Locale("", ISO2);
-            String ISO3 = l.getISO3Country();
-            countries.put(l.getDisplayCountry(), ISO3);
+        for (String date : resultHashMap.keySet()) {
+            addResult(resultHashMap.get(date));
         }
     }
 
@@ -83,21 +90,23 @@ public class Controller {
         return "";
     }
 
-    boolean CheckD(String datum){
-        if(datum.length()!=10) return false;
-        for(int i=0;i<=9;i++){
-            if(i==4||i==7) {
+    boolean CheckDate(String datum){
+        if(datum.length()!=10) {
+            return true;
+        }
+        for(int i=0;i<=datum.length()-1;i++){
+            if(i==4||i==6) {
                 if(datum.charAt(i)!='-') {
-                    return false;
+                    return true;
                 }
             }
             if(i!=4&&i!=7) {
                 if(datum.charAt(i)<'0'||datum.charAt(i)>'9') {
-                    return false;
+                    return true;
                 }
             }
         }
-        return true;
+        return false;
     }
 
     private static String jsonParse(String responseString) {
@@ -112,18 +121,27 @@ public class Controller {
 
         Arrays.sort(resultDatesSorted);
 
-        for (String res : resultDatesSorted) {
+        if(glob){
             JSONObject result = results.getJSONObject(0).getJSONObject("result");
-            if(!GB) result = result.getJSONObject(res);
-
-            String date = res;
+            JSONObject obj = new JSONObject(responseString);
+            String date = obj.getString("date");
             String confirmed = String.valueOf(result.getInt("confirmed"));
             String deaths = String.valueOf(result.getInt("deaths"));
             String recovered = String.valueOf(result.getInt("recovered"));
 
-            resultHashMap.put(res, new Result(res,confirmed,deaths,recovered));
+            resultHashMap.put("", new Result(date,confirmed,deaths,recovered));
         }
+        else {
+            JSONObject result = results.getJSONObject(0).getJSONObject("result");
+            for (String res : resultDatesSorted) {
+                JSONObject date = result.getJSONObject(res);
+                String confirmed = "" + date.getInt("confirmed");
+                String deaths = "" + date.getInt("deaths");
+                String recovered = "" + date.getInt("recovered");
 
+                resultHashMap.put(res, new Result(res, confirmed, deaths, recovered));
+            }
+        }
         return null;
     }
 

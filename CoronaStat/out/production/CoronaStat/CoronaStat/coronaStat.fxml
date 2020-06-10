@@ -20,7 +20,7 @@
 
     <TableView fx:id="tableView" GridPane.columnIndex="0" GridPane.rowIndex="0">
         <columns>
-            <TableColumn fx:id="dateColumn" prefWidth="200" text="Dátum" sortable="true">
+            <TableColumn fx:id="dateColumn" prefWidth="200" text="Dátum" sortable="true" sortType="DESCENDING">
                 <cellValueFactory> <PropertyValueFactory property="date"/> </cellValueFactory>
             </TableColumn>
             <TableColumn fx:id="confirmedColumn" prefWidth="200" text="Potvrdených prípadov" sortable="true">
@@ -39,9 +39,10 @@
         <HBox spacing = "20" alignment="BOTTOM_CENTER" GridPane.columnIndex="0" GridPane.rowIndex="2">
             <TextField fx:id="countryField" promptText="Krajina" prefWidth="150"/>
             <TextField fx:id="dateField" promptText="rok-mesiac-deň" prefWidth="150"/>
-            <Button text="Nájsť Dátum" onAction="#find" />
+            <Button text="Nájsť krainu" onAction="#findCountry" />
+            <Button text="Nájsť s dátumom" onAction="#findWDate" />
         </HBox>
-        <Label>Krajiny idú vyhľadávať len v slovenčine napr. Slovensko</Label>
-        <Label>Dátum -> Formát: rok-mesiac-deň</Label>
+        <Label>Názov pre krajinu iba vo formátoch: Slovensko</Label>
+        <Label>Dátum -> Formát: rok-mesiac-deň (2020-03-05)</Label>
     </VBox>
 </GridPane>
